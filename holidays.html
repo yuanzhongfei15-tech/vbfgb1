@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>节日倒计时 - 纪念日时间计算器</title>
+    <meta name="description" content="免费在线节日倒计时，热门节日倒计时提醒，春节、中秋节、国庆节等">
+    <meta name="keywords" content="节日倒计时,春节倒计时,中秋节倒计时,节日提醒,热门节日">
+    <link rel="canonical" href="https://yourusername.github.io/holidays.html">
+    <meta property="og:title" content="节日倒计时 - 纪念日时间计算器">
+    <meta property="og:description" content="免费在线节日倒计时，热门节日倒计时提醒">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://yourusername.github.io/holidays.html">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <h1 class="logo">✨ 节日倒计时</h1>
+                <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
+                    <span class="theme-icon">🌙</span>
+                </button>
+            </div>
+        </header>
+
+        <nav class="main-nav">
+            <a href="index.html" class="nav-item">首页</a>
+            <a href="countdown.html" class="nav-item">倒计时</a>
+            <a href="days-calculator.html" class="nav-item">天数计算器</a>
+            <a href="birthday.html" class="nav-item">生日</a>
+            <a href="love.html" class="nav-item">恋爱</a>
+            <a href="holidays.html" class="nav-item active">节日</a>
+        </nav>
+
+        <main>
+            <section class="popular-holidays">
+                <h3>热门节日</h3>
+                <div class="holiday-list" id="allHolidayList"></div>
+            </section>
+
+            <section class="form-section">
+                <h3>添加自定义节日</h3>
+                <form id="customHolidayForm">
+                    <div class="form-group">
+                        <label for="holidayName">节日名称</label>
+                        <input type="text" id="holidayName" placeholder="例如：公司年会" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="holidayDate">节日日期</label>
+                        <input type="date" id="holidayDate" required>
+                    </div>
+                    <div class="btn-group">
+                        <button type="submit" class="btn btn-primary">保存</button>
+                    </div>
+                </form>
+            </section>
+
+            <section class="saved-memorials">
+                <h3>我的节日</h3>
+                <div class="memorial-list" id="customHolidayList">
+                    <p class="empty">暂无自定义节日</p>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2024 纪念日时间计算器. 纯前端 · 无后端 · 保护隐私</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            renderAllHolidays();
+            
+            const form = document.getElementById('customHolidayForm');
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const name = document.getElementById('holidayName').value;
+                const date = document.getElementById('holidayDate').value;
+                addMemorial({ name, date, type: 'holiday' });
+                form.reset();
+                renderCustomHolidays();
+            });
+            
+            renderCustomHolidays();
+        });
+        
+        function renderAllHolidays() {
+            const container = document.getElementById('allHolidayList');
+            const holidaysWithDays = POPULAR_HOLIDAYS.map(holiday => {
+                const date = getHolidayDate(holiday);
+                const days = getDaysUntil(date);
+                return { ...holiday, date, days };
+            }).sort((a, b) => a.days - b.days);
+            
+            container.innerHTML = holidaysWithDays.map(holiday => `
+                <div class="holiday-item">
+                    <div class="holiday-info">
+                        <div class="holiday-name">${holiday.icon} ${holiday.name}</div>
+                        <div class="holiday-date">${formatDate(holiday.date)}</div>
+                    </div>
+                    <div class="holiday-countdown">
+                        <div class="countdown-number">${holiday.days}</div>
+                        <div class="countdown-text">${holiday.days === 0 ? '今天！' : holiday.days === 1 ? '明天' : '天后'}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function renderCustomHolidays() {
+            const container = document.getElementById('customHolidayList');
+            const memorials = getSavedMemorials().filter(m => m.type === 'holiday');
+            
+            if (memorials.length === 0) {
+                container.innerHTML = '<p class="empty">暂无自定义节日</p>';
+                return;
+            }
+            
+            const sortedMemorials = memorials.map(m => {
+                const date = new Date(m.date);
+                const days = getDaysUntil(date);
+                return { ...m, dateObj: date, days };
+            }).sort((a, b) => a.days - b.days);
+            
+            container.innerHTML = sortedMemorials.map(m => `
+                <div class="memorial-item">
+                    <div class="memorial-info">
+                        <div class="memorial-name">🎉 ${m.name}</div>
+                        <div class="memorial-date">${formatDate(m.dateObj)}</div>
+                    </div>
+                    <div class="memorial-countdown">
+                        <div class="countdown-number">${m.days >= 0 ? m.days : Math.abs(m.days)}</div>
+                        <div class="countdown-text">${m.days === 0 ? '今天！' : m.days > 0 ? '天后' : '天前'}</div>
+                    </div>
+                    <button class="delete-btn" onclick="deleteMemorial(${m.id}); renderCustomHolidays();" aria-label="删除">🗑️</button>
+                </div>
+            `).join('');
+        }
+    </script>
+</body>
+</html>

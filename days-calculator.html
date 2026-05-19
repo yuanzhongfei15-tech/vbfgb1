@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>天数计算器 - 纪念日时间计算器</title>
+    <meta name="description" content="免费在线天数计算器，计算两个日期之间相差的天数，已过多少天，还有多少天">
+    <meta name="keywords" content="天数计算器,日期差计算,日期计算,相差天数,还有多少天">
+    <link rel="canonical" href="https://yourusername.github.io/days-calculator.html">
+    <meta property="og:title" content="天数计算器 - 纪念日时间计算器">
+    <meta property="og:description" content="免费在线天数计算器，计算两个日期之间相差的天数">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://yourusername.github.io/days-calculator.html">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <h1 class="logo">✨ 天数计算器</h1>
+                <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
+                    <span class="theme-icon">🌙</span>
+                </button>
+            </div>
+        </header>
+
+        <nav class="main-nav">
+            <a href="index.html" class="nav-item">首页</a>
+            <a href="countdown.html" class="nav-item">倒计时</a>
+            <a href="days-calculator.html" class="nav-item active">天数计算器</a>
+            <a href="birthday.html" class="nav-item">生日</a>
+            <a href="love.html" class="nav-item">恋爱</a>
+            <a href="holidays.html" class="nav-item">节日</a>
+        </nav>
+
+        <main>
+            <section class="form-section">
+                <h3>计算天数差</h3>
+                <form id="daysForm">
+                    <div class="form-group">
+                        <label for="date1">开始日期</label>
+                        <input type="date" id="date1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="date2">结束日期</label>
+                        <input type="date" id="date2" required>
+                    </div>
+                    <div class="btn-group">
+                        <button type="submit" class="btn btn-primary">计算</button>
+                    </div>
+                </form>
+            </section>
+
+            <section class="result-section" id="resultSection" style="display: none;">
+                <h3>计算结果</h3>
+                <div class="result-value" id="resultValue">0</div>
+                <div class="result-label">天</div>
+            </section>
+
+            <section class="form-section">
+                <h3>快速计算</h3>
+                <form id="quickForm">
+                    <div class="form-group">
+                        <label for="targetDate">目标日期</label>
+                        <input type="date" id="targetDate" required>
+                    </div>
+                    <div class="btn-group">
+                        <button type="submit" class="btn btn-primary">计算距离今天</button>
+                    </div>
+                </form>
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2024 纪念日时间计算器. 纯前端 · 无后端 · 保护隐私</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('date1').value = today;
+            document.getElementById('targetDate').value = today;
+            
+            const daysForm = document.getElementById('daysForm');
+            daysForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const date1 = document.getElementById('date1').value;
+                const date2 = document.getElementById('date2').value;
+                const days = calculateDaysBetween(date1, date2);
+                document.getElementById('resultValue').textContent = days;
+                document.getElementById('resultSection').style.display = 'block';
+            });
+            
+            const quickForm = document.getElementById('quickForm');
+            quickForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const targetDate = document.getElementById('targetDate').value;
+                const days = getDaysUntil(targetDate);
+                document.getElementById('resultValue').textContent = days >= 0 ? days : Math.abs(days);
+                document.getElementById('resultSection').querySelector('.result-label').textContent = days >= 0 ? '天后' : '天前';
+                document.getElementById('resultSection').style.display = 'block';
+            });
+        });
+    </script>
+</body>
+</html>

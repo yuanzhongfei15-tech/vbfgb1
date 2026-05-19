@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生日倒计时 - 纪念日时间计算器</title>
+    <meta name="description" content="免费在线生日倒计时工具，记录生日，每年自动提醒，支持保存多个生日">
+    <meta name="keywords" content="生日倒计时,生日提醒,生日计算器,生日记录">
+    <link rel="canonical" href="https://yourusername.github.io/birthday.html">
+    <meta property="og:title" content="生日倒计时 - 纪念日时间计算器">
+    <meta property="og:description" content="免费在线生日倒计时工具，记录生日，每年自动提醒">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://yourusername.github.io/birthday.html">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <h1 class="logo">✨ 生日倒计时</h1>
+                <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
+                    <span class="theme-icon">🌙</span>
+                </button>
+            </div>
+        </header>
+
+        <nav class="main-nav">
+            <a href="index.html" class="nav-item">首页</a>
+            <a href="countdown.html" class="nav-item">倒计时</a>
+            <a href="days-calculator.html" class="nav-item">天数计算器</a>
+            <a href="birthday.html" class="nav-item active">生日</a>
+            <a href="love.html" class="nav-item">恋爱</a>
+            <a href="holidays.html" class="nav-item">节日</a>
+        </nav>
+
+        <main>
+            <section class="form-section">
+                <h3>添加生日</h3>
+                <form id="birthdayForm">
+                    <div class="form-group">
+                        <label for="personName">姓名</label>
+                        <input type="text" id="personName" placeholder="例如：小明" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="birthdayDate">生日日期</label>
+                        <input type="date" id="birthdayDate" required>
+                    </div>
+                    <div class="btn-group">
+                        <button type="submit" class="btn btn-primary">保存生日</button>
+                    </div>
+                </form>
+            </section>
+
+            <section class="saved-memorials">
+                <h3>生日列表</h3>
+                <div class="memorial-list" id="birthdayList">
+                    <p class="empty">暂无生日记录，快去添加吧！</p>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2024 纪念日时间计算器. 纯前端 · 无后端 · 保护隐私</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('birthdayForm');
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const name = document.getElementById('personName').value;
+                const date = document.getElementById('birthdayDate').value;
+                addMemorial({ name, date, type: 'birthday' });
+                form.reset();
+                renderBirthdayList();
+            });
+            
+            renderBirthdayList();
+        });
+        
+        function getNextBirthday(birthdayStr) {
+            const birthday = new Date(birthdayStr);
+            const now = new Date();
+            let nextBirthday = new Date(now.getFullYear(), birthday.getMonth(), birthday.getDate());
+            if (nextBirthday < now) {
+                nextBirthday = new Date(now.getFullYear() + 1, birthday.getMonth(), birthday.getDate());
+            }
+            return nextBirthday;
+        }
+        
+        function getAge(birthdayStr) {
+            const birthday = new Date(birthdayStr);
+            const now = new Date();
+            let age = now.getFullYear() - birthday.getFullYear();
+            const monthDiff = now.getMonth() - birthday.getMonth();
+            if (monthDiff < 0 || (monthDiff === 0 && now.getDate() < birthday.getDate())) {
+                age--;
+            }
+            return age;
+        }
+        
+        function renderBirthdayList() {
+            const container = document.getElementById('birthdayList');
+            const memorials = getSavedMemorials().filter(m => m.type === 'birthday');
+            
+            if (memorials.length === 0) {
+                container.innerHTML = '<p class="empty">暂无生日记录，快去添加吧！</p>';
+                return;
+            }
+            
+            const sortedMemorials = memorials.map(m => {
+                const nextBirthday = getNextBirthday(m.date);
+                const days = getDaysUntil(nextBirthday);
+                const age = getAge(m.date);
+                return { ...m, nextBirthday, days, age };
+            }).sort((a, b) => a.days - b.days);
+            
+            container.innerHTML = sortedMemorials.map(m => `
+                <div class="memorial-item">
+                    <div class="memorial-info">
+                        <div class="memorial-name">🎂 ${m.name}</div>
+                        <div class="memorial-date">${formatDate(m.nextBirthday)} (${m.age + 1}岁)</div>
+                    </div>
+                    <div class="memorial-countdown">
+                        <div class="countdown-number">${m.days}</div>
+                        <div class="countdown-text">${m.days === 0 ? '今天生日！🎁' : m.days === 1 ? '明天' : '天后'}</div>
+                    </div>
+                    <button class="delete-btn" onclick="deleteMemorial(${m.id}); renderBirthdayList();" aria-label="删除">🗑️</button>
+                </div>
+            `).join('');
+        }
+    </script>
+</body>
+</html>

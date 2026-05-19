@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>纪念日时间计算器 - 倒计时、生日、恋爱、节日提醒</title>
+    <meta name="description" content="免费在线纪念日时间计算器，支持倒计时、天数计算、生日倒计时、恋爱纪念日、节日提醒，适配手机电脑，支持深色浅色模式">
+    <meta name="keywords" content="纪念日计算器,倒计时,生日倒计时,恋爱纪念日,节日倒计时,天数计算器">
+    <meta name="author" content="纪念日计算器">
+    <link rel="canonical" href="https://yourusername.github.io/">
+    <meta property="og:title" content="纪念日时间计算器">
+    <meta property="og:description" content="免费在线纪念日时间计算器，支持倒计时、天数计算、生日倒计时、恋爱纪念日、节日提醒">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://yourusername.github.io/">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="纪念日时间计算器">
+    <meta name="twitter:description" content="免费在线纪念日时间计算器，支持倒计时、天数计算、生日倒计时、恋爱纪念日、节日提醒">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <h1 class="logo">✨ 纪念日时间计算器</h1>
+                <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
+                    <span class="theme-icon">🌙</span>
+                </button>
+            </div>
+        </header>
+
+        <nav class="main-nav">
+            <a href="index.html" class="nav-item active">首页</a>
+            <a href="countdown.html" class="nav-item">倒计时</a>
+            <a href="days-calculator.html" class="nav-item">天数计算器</a>
+            <a href="birthday.html" class="nav-item">生日</a>
+            <a href="love.html" class="nav-item">恋爱</a>
+            <a href="holidays.html" class="nav-item">节日</a>
+        </nav>
+
+        <main>
+            <section class="hero">
+                <h2>记录每一个重要时刻</h2>
+                <p>简单、快捷、免费的纪念日工具</p>
+            </section>
+
+            <section class="quick-links">
+                <h3>快捷功能</h3>
+                <div class="grid">
+                    <a href="countdown.html" class="card">
+                        <div class="card-icon">⏰</div>
+                        <h4>倒计时</h4>
+                        <p>创建重要事件的倒计时</p>
+                    </a>
+                    <a href="days-calculator.html" class="card">
+                        <div class="card-icon">📅</div>
+                        <h4>天数计算器</h4>
+                        <p>计算两个日期之间的天数</p>
+                    </a>
+                    <a href="birthday.html" class="card">
+                        <div class="card-icon">🎂</div>
+                        <h4>生日倒计时</h4>
+                        <p>记录和提醒生日</p>
+                    </a>
+                    <a href="love.html" class="card">
+                        <div class="card-icon">💕</div>
+                        <h4>恋爱纪念日</h4>
+                        <p>记录爱情的美好时光</p>
+                    </a>
+                    <a href="holidays.html" class="card">
+                        <div class="card-icon">🎉</div>
+                        <h4>节日倒计时</h4>
+                        <p>热门节日提前知道</p>
+                    </a>
+                </div>
+            </section>
+
+            <section class="popular-holidays">
+                <h3>热门节日</h3>
+                <div class="holiday-list" id="holidayList"></div>
+            </section>
+
+            <section class="saved-memorials">
+                <h3>我的纪念日</h3>
+                <div class="memorial-list" id="memorialList">
+                    <p class="empty">暂无保存的纪念日，快去创建吧！</p>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2024 纪念日时间计算器. 纯前端 · 无后端 · 保护隐私</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

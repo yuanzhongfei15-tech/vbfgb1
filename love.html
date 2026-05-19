@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>恋爱纪念日 - 纪念日时间计算器</title>
+    <meta name="description" content="免费在线恋爱纪念日计算器，记录在一起的天数，重要纪念日提醒">
+    <meta name="keywords" content="恋爱纪念日,在一起天数,爱情记录,纪念日计算器">
+    <link rel="canonical" href="https://yourusername.github.io/love.html">
+    <meta property="og:title" content="恋爱纪念日 - 纪念日时间计算器">
+    <meta property="og:description" content="免费在线恋爱纪念日计算器，记录在一起的天数">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://yourusername.github.io/love.html">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <h1 class="logo">✨ 恋爱纪念日</h1>
+                <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
+                    <span class="theme-icon">🌙</span>
+                </button>
+            </div>
+        </header>
+
+        <nav class="main-nav">
+            <a href="index.html" class="nav-item">首页</a>
+            <a href="countdown.html" class="nav-item">倒计时</a>
+            <a href="days-calculator.html" class="nav-item">天数计算器</a>
+            <a href="birthday.html" class="nav-item">生日</a>
+            <a href="love.html" class="nav-item active">恋爱</a>
+            <a href="holidays.html" class="nav-item">节日</a>
+        </nav>
+
+        <main>
+            <section class="form-section">
+                <h3>记录我们的开始</h3>
+                <form id="loveForm">
+                    <div class="form-group">
+                        <label for="loveName">纪念日名称</label>
+                        <input type="text" id="loveName" placeholder="例如：在一起的第一天" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="loveDate">开始日期</label>
+                        <input type="date" id="loveDate" required>
+                    </div>
+                    <div class="btn-group">
+                        <button type="submit" class="btn btn-primary">保存</button>
+                    </div>
+                </form>
+            </section>
+
+            <section class="result-section" id="loveResult" style="display: none;">
+                <h3 id="loveTitle">我们在一起</h3>
+                <div class="result-value" id="loveDays">0</div>
+                <div class="result-label">天啦 💕</div>
+            </section>
+
+            <section class="saved-memorials">
+                <h3>恋爱纪念日</h3>
+                <div class="memorial-list" id="loveList">
+                    <p class="empty">暂无记录，快去添加吧！</p>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2024 纪念日时间计算器. 纯前端 · 无后端 · 保护隐私</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('loveForm');
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const name = document.getElementById('loveName').value;
+                const date = document.getElementById('loveDate').value;
+                addMemorial({ name, date, type: 'love' });
+                form.reset();
+                renderLoveList();
+                showLoveResult(name, date);
+            });
+            
+            renderLoveList();
+            
+            const loveMemorials = getSavedMemorials().filter(m => m.type === 'love');
+            if (loveMemorials.length > 0) {
+                showLoveResult(loveMemorials[0].name, loveMemorials[0].date);
+            }
+        });
+        
+        function showLoveResult(name, date) {
+            const resultSection = document.getElementById('loveResult');
+            const title = document.getElementById('loveTitle');
+            const days = document.getElementById('loveDays');
+            
+            const daysTogether = Math.abs(getDaysUntil(date));
+            title.textContent = name;
+            days.textContent = daysTogether;
+            resultSection.style.display = 'block';
+        }
+        
+        function renderLoveList() {
+            const container = document.getElementById('loveList');
+            const memorials = getSavedMemorials().filter(m => m.type === 'love');
+            
+            if (memorials.length === 0) {
+                container.innerHTML = '<p class="empty">暂无记录，快去添加吧！</p>';
+                return;
+            }
+            
+            const sortedMemorials = memorials.map(m => {
+                const date = new Date(m.date);
+                const days = Math.abs(getDaysUntil(date));
+                return { ...m, dateObj: date, days };
+            }).sort((a, b) => new Date(a.date) - new Date(b.date));
+            
+            container.innerHTML = sortedMemorials.map(m => `
+                <div class="memorial-item">
+                    <div class="memorial-info">
+                        <div class="memorial-name">💕 ${m.name}</div>
+                        <div class="memorial-date">${formatDate(m.dateObj)} 开始</div>
+                    </div>
+                    <div class="memorial-countdown">
+                        <div class="countdown-number">${m.days}</div>
+                        <div class="countdown-text">天</div>
+                    </div>
+                    <button class="delete-btn" onclick="deleteMemorial(${m.id}); renderLoveList();" aria-label="删除">🗑️</button>
+                </div>
+            `).join('');
+        }
+    </script>
+</body>
+</html>

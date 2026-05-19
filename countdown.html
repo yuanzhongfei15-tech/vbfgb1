@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>倒计时 - 纪念日时间计算器</title>
+    <meta name="description" content="免费在线倒计时工具，创建重要事件的倒计时提醒，支持保存到本地">
+    <meta name="keywords" content="倒计时,事件倒计时,日期倒计时,重要日子提醒">
+    <link rel="canonical" href="https://yourusername.github.io/countdown.html">
+    <meta property="og:title" content="倒计时 - 纪念日时间计算器">
+    <meta property="og:description" content="免费在线倒计时工具，创建重要事件的倒计时提醒">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://yourusername.github.io/countdown.html">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <h1 class="logo">✨ 倒计时</h1>
+                <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
+                    <span class="theme-icon">🌙</span>
+                </button>
+            </div>
+        </header>
+
+        <nav class="main-nav">
+            <a href="index.html" class="nav-item">首页</a>
+            <a href="countdown.html" class="nav-item active">倒计时</a>
+            <a href="days-calculator.html" class="nav-item">天数计算器</a>
+            <a href="birthday.html" class="nav-item">生日</a>
+            <a href="love.html" class="nav-item">恋爱</a>
+            <a href="holidays.html" class="nav-item">节日</a>
+        </nav>
+
+        <main>
+            <section class="form-section">
+                <h3>创建倒计时</h3>
+                <form id="countdownForm">
+                    <div class="form-group">
+                        <label for="eventName">事件名称</label>
+                        <input type="text" id="eventName" placeholder="例如：高考、旅行、结婚..." required>
+                    </div>
+                    <div class="form-group">
+                        <label for="eventDate">目标日期</label>
+                        <input type="date" id="eventDate" required>
+                    </div>
+                    <div class="btn-group">
+                        <button type="submit" class="btn btn-primary">添加倒计时</button>
+                    </div>
+                </form>
+            </section>
+
+            <section class="result-section" id="resultSection" style="display: none;">
+                <h3 id="resultTitle">距离...</h3>
+                <div class="result-value" id="resultValue">0</div>
+                <div class="result-label" id="resultLabel">天</div>
+            </section>
+
+            <section class="saved-memorials">
+                <h3>我的倒计时</h3>
+                <div class="memorial-list" id="countdownList">
+                    <p class="empty">暂无倒计时，快去创建吧！</p>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2024 纪念日时间计算器. 纯前端 · 无后端 · 保护隐私</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('countdownForm');
+            const resultSection = document.getElementById('resultSection');
+            const resultTitle = document.getElementById('resultTitle');
+            const resultValue = document.getElementById('resultValue');
+            const resultLabel = document.getElementById('resultLabel');
+            
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const name = document.getElementById('eventName').value;
+                const date = document.getElementById('eventDate').value;
+                
+                addMemorial({ name, date, type: 'countdown' });
+                
+                const days = getDaysUntil(date);
+                resultTitle.textContent = `距离 ${name}`;
+                resultValue.textContent = days >= 0 ? days : Math.abs(days);
+                resultLabel.textContent = days === 0 ? '今天！' : days > 0 ? '天' : '天已过';
+                resultSection.style.display = 'block';
+            });
+            
+            renderCountdownList();
+        });
+        
+        function renderCountdownList() {
+            const container = document.getElementById('countdownList');
+            const memorials = getSavedMemorials().filter(m => m.type === 'countdown');
+            
+            if (memorials.length === 0) {
+                container.innerHTML = '<p class="empty">暂无倒计时，快去创建吧！</p>';
+                return;
+            }
+            
+            const sortedMemorials = memorials.map(m => {
+                const date = new Date(m.date);
+                const days = getDaysUntil(date);
+                return { ...m, dateObj: date, days };
+            }).sort((a, b) => a.days - b.days);
+            
+            container.innerHTML = sortedMemorials.map(m => `
+                <div class="memorial-item">
+                    <div class="memorial-info">
+                        <div class="memorial-name">⏰ ${m.name}</div>
+                        <div class="memorial-date">${formatDate(m.dateObj)}</div>
+                    </div>
+                    <div class="memorial-countdown">
+                        <div class="countdown-number">${m.days >= 0 ? m.days : Math.abs(m.days)}</div>
+                        <div class="countdown-text">${m.days === 0 ? '今天！' : m.days > 0 ? '天后' : '天前'}</div>
+                    </div>
+                    <button class="delete-btn" onclick="deleteMemorial(${m.id}); renderCountdownList();" aria-label="删除">🗑️</button>
+                </div>
+            `).join('');
+        }
+    </script>
+</body>
+</html>
